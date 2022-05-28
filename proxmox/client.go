@@ -231,9 +231,23 @@ func (c *Client) GetVmConfig(vmr *VmRef) (vmConfig map[string]interface{}, err e
 		return nil, err
 	}
 	if data["data"] == nil {
-		return nil, errors.New("Vm CONFIG not readable")
+		return nil, errors.New("vm CONFIG not readable")
 	}
 	vmConfig = data["data"].(map[string]interface{})
+	return
+}
+
+func (c *Client) ListStorages(nodeName string) (storages []interface{}, err error) {
+	var data map[string]interface{}
+	url := fmt.Sprintf("/nodes/%s/storage", nodeName)
+	err = c.GetJsonRetryable(url, &data, 3)
+	if err != nil {
+		return nil, err
+	}
+	if data["data"] == nil {
+		return nil, errors.New("failed to list storage")
+	}
+	storages = data["data"].([]interface{})
 	return
 }
 
@@ -249,7 +263,7 @@ func (c *Client) GetStorageStatus(vmr *VmRef, storageName string) (storageStatus
 		return nil, err
 	}
 	if data["data"] == nil {
-		return nil, errors.New("Storage STATUS not readable")
+		return nil, errors.New("storage STATUS not readable")
 	}
 	storageStatus = data["data"].(map[string]interface{})
 	return
